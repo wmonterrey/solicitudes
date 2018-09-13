@@ -48,13 +48,15 @@
   	<jsp:include page="../fragments/sideBar.jsp" />
     <!-- Main content -->
     <main class="main">
-	  <spring:url value="/sols/atender/comprar/saveCompra/" var="saveCompraUrl"></spring:url>
-	  <spring:url value="/sols/atender/comprar/" var="comprasPendUrl"></spring:url>
+	  <spring:url value="/procesos/compras/saveCompra/" var="saveCompraUrl"></spring:url>
+	  <spring:url value="/procesos/compras/{idCompra}/" var="comprasPendUrl">
+		<spring:param name="idCompra" value="${compra.idCompra}" />
+	  </spring:url>
       <!-- Breadcrumb -->
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="<spring:url value="/" htmlEscape="true "/>"><spring:message code="home" /></a></li>
-        <li class="breadcrumb-item"><a href="<spring:url value="/sols/atender/comprar/" htmlEscape="true "/>"><spring:message code="attend.shop" /></a></li>
-        <li class="breadcrumb-item active"><c:out value="${item.insumo.codigoBrand}" /></li>
+        <li class="breadcrumb-item"><a href="<spring:url value="/procesos/compras/" htmlEscape="true "/>"><spring:message code="process.shop" /></a></li>
+        <li class="breadcrumb-item active"><c:out value="${compra.item.codigoBrand}" /></li>
         <!-- Breadcrumb Menu-->
         <li class="breadcrumb-menu d-md-down-none">
           <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -85,32 +87,11 @@
                       <form action="#" autocomplete="off" id="add-shop-form">   
                         
 	                    <div class="form-group row">
-	                      <label class="col-md-2 col-form-label"><spring:message code="numSolicitud" />:</label>
+	                      <label class="col-md-2 col-form-label"><spring:message code="idCompra" />:</label>
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-key"></i></span>
-	                        	<input type="text" id="numSolicitud" name="numSolicitud" readonly autocomplete="numSolicitud" value="${item.solicitud.numSolicitud}" class="form-control" placeholder="<spring:message code="numSolicitud" />">
-	                        </div>
-	                      </div>
-	                    </div>
-	                    
-	                    <div class="form-group row">
-	                      <label class="col-md-2 col-form-label"><spring:message code="fecSolicitud" />:</label>
-	                      <div class="col-md-10">
-	                      	<div class="input-group">
-	                      		<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-	                      		<fmt:formatDate value="${item.solicitud.fecSolicitud}" var="datesolicitud" pattern="yyyy-MM-dd" />
-	                        	<input type="text" id="fecSolicitud" name="fecSolicitud" readonly autocomplete="fecSolicitud" value="${datesolicitud}" class="form-control" placeholder="<spring:message code="fecSolicitud" />">
-	                        </div>
-	                      </div>
-	                    </div>
-	                    
-	                    <div class="form-group row">
-	                      <label class="col-md-2 col-form-label"><spring:message code="idItem" />:</label>
-	                      <div class="col-md-10">
-	                      	<div class="input-group">
-	                      		<span class="input-group-addon"><i class="fa fa-key"></i></span>
-	                        	<input type="text" id="idItem" name="idItem" readonly autocomplete="idItem" value="${item.idItem}" class="form-control" placeholder="<spring:message code="idItem" />">
+	                        	<input type="text" id="idCompra" name="idCompra" readonly autocomplete="idCompra" value="${compra.idCompra}" class="form-control" placeholder="<spring:message code="idCompra" />">
 	                        </div>
 	                      </div>
 	                    </div>
@@ -120,7 +101,7 @@
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-key"></i></span>
-	                        	<input type="text" id="idInsumo" name="idInsumo" readonly autocomplete="idInsumo" value="${item.insumo.idInsumo}" class="form-control" placeholder="<spring:message code="idInsumo" />">
+	                        	<input type="text" id="idInsumo" name="idInsumo" readonly autocomplete="idInsumo" value="${compra.item.idInsumo}" class="form-control" placeholder="<spring:message code="idInsumo" />">
 	                        </div>
 	                      </div>
 	                    </div>
@@ -130,12 +111,44 @@
 	                      <div class="col-md-10">
                       		<c:choose>
 								<c:when test="${cookie.eSolicitudesLang.value == 'en'}">
-									<p class="form-control-static"><strong><c:out value="${item.insumo.codigoBrand}" /> - <c:out value="${item.insumo.nombreInsumoEn}" /> - <c:out value="${item.insumo.casaBrand}" /></strong></p>
+									<p class="form-control-static"><strong><c:out value="${compra.item.codigoBrand}" /> - <c:out value="${compra.item.nombreInsumoEn}" /> - <c:out value="${compra.item.casaBrand}" /></strong></p>
                         		</c:when>
                         		<c:otherwise>
-                        			<p class="form-control-static"><strong><c:out value="${item.insumo.codigoBrand}" /> - <c:out value="${item.insumo.nombreInsumoEs}" /> - <c:out value="${item.insumo.casaBrand}" /></strong></p>
+                        			<p class="form-control-static"><strong><c:out value="${compra.item.codigoBrand}" /> - <c:out value="${compra.item.nombreInsumoEs}" /> - <c:out value="${compra.item.casaBrand}" /></strong></p>
                         		</c:otherwise>
 							</c:choose>	                        		
+	                      </div>
+	                    </div>
+	                    
+	                    <div class="form-group row">
+	                      <label class="col-md-2 col-form-label"><spring:message code="fechaCompra" />:</label>
+	                      <div class="col-md-10">
+	                      	<div class="input-group">
+	                      		<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+	                      		<fmt:formatDate value="${compra.fechaCompra}" var="datecompra" pattern="dd/MM/yyyy" />
+	                        	<input type="text" id="fechaCompra" name="fechaCompra" autocomplete="fechaCompra" value="${datecompra}" class="form-control date-picker" data-date-format="dd/mm/yyyy" data-date-end-date="+0d" placeholder="<spring:message code="fechaCompra" />">
+	                        </div>
+	                      </div>
+	                    </div>
+	                    
+	                    <div class="form-group row">
+	                      <label class="col-md-2 col-form-label"><spring:message code="lugarCompra" />:</label>
+	                      <div class="col-md-10">
+	                      	<div>
+		                        <select name="lugarCompra" id="lugarCompra" class="form-control select2-single">
+			                    	<option value=""><spring:message code="empty"/></option>
+			                    	<c:forEach items="${centros}" var="centro">									
+										<c:choose> 
+											<c:when test="${centro.idCentro eq compra.lugarCompra}">
+												<option selected value="${centro.idCentro}">${centro.nombreCentro}</option>
+											</c:when>
+											<c:otherwise>
+												<option value="${centro.idCentro}">${centro.nombreCentro}</option>
+											</c:otherwise>
+										</c:choose>
+									</c:forEach>
+			                    </select>
+	                        </div>
 	                      </div>
 	                    </div>
 	                    
@@ -146,37 +159,19 @@
 		                        <select name="cuenta" id="cuenta" class="form-control select2-single">
 			                    	<option value=""><spring:message code="empty"/></option>
 			                    	<c:forEach items="${cuentas}" var="cuenta">
-										<option value="${cuenta.idCuenta}">${cuenta.nombreCuenta}</option>
+										<c:choose> 
+											<c:when test="${cuenta.idCuenta eq compra.cuenta.idCuenta}">
+												<option selected value="${cuenta.idCuenta}">${cuenta.nombreCuenta}</option>
+											</c:when>
+											<c:otherwise>
+												<option value="${cuenta.idCuenta}">${cuenta.nombreCuenta}</option>
+											</c:otherwise>
+										</c:choose>
 									</c:forEach>
 			                    </select>
 	                        </div>
 	                      </div>
 	                    </div> 	                    
-	                    
-	                    <div class="form-group row">
-	                      <label class="col-md-2 col-form-label"><spring:message code="lugarCompra" />:</label>
-	                      <div class="col-md-10">
-	                      	<div>
-		                        <select name="lugarCompra" id="lugarCompra" class="form-control select2-single">
-			                    	<option value=""><spring:message code="empty"/></option>
-			                    	<c:forEach items="${centros}" var="centro">
-			                    		<option value="${centro.idCentro}">${centro.nombreCentro}</option>
-									</c:forEach>
-			                    </select>
-	                        </div>
-	                      </div>
-	                    </div>
-	                    
-	                    <div class="form-group row">
-	                      <fmt:formatDate value="${hoy}" var="fechahoy" pattern="dd/MM/yyyy" />	
-	                      <label class="col-md-2 col-form-label"><spring:message code="fechaCompra" />:</label>
-	                      <div class="col-md-10">
-	                      	<div class="input-group">
-	                      		<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-	                        	<input type="text" id="fechaCompra" name="fechaCompra" value="${fechahoy}" class="form-control date-picker" data-date-format="dd/mm/yyyy" data-date-end-date="+0d" placeholder="<spring:message code="fechaCompra" />">
-	                        </div>
-	                      </div>
-	                    </div>
 	                    
 	                    <div class="form-group row">
 	                      <label class="col-md-2 col-form-label"><spring:message code="proveedor" />:</label>
@@ -185,7 +180,14 @@
 		                       	<select name="proveedor" id="proveedor" class="form-control select2-single">
 			                    	<option value=""></option>
 			                    	<c:forEach items="${proveedores}" var="proveedor">
-			                    		<option value="${proveedor}">${proveedor}</option>
+			                    		<c:choose> 
+											<c:when test="${proveedor eq compra.proveedor}">
+												<option selected value="${proveedor}">${proveedor}</option>
+											</c:when>
+											<c:otherwise>
+												<option value="${proveedor}">${proveedor}</option>
+											</c:otherwise>
+										</c:choose>
 									</c:forEach>
 			                    </select>
 	                        </div>
@@ -197,7 +199,7 @@
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-sort-alpha-asc"></i></span>
-	                        	<input type="text" id="numFactura" name="numFactura" autocomplete="numFactura" class="form-control" placeholder="<spring:message code="numFactura" />">
+	                        	<input type="text" value="${compra.numFactura}" id="numFactura" name="numFactura" autocomplete="numFactura" class="form-control" placeholder="<spring:message code="numFactura" />">
 	                        </div>
 	                      </div>
 	                    </div>
@@ -207,7 +209,7 @@
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i></span>
-	                        	<input type="text" id="cantComprada" name="cantComprada" autocomplete="cantComprada" value="${item.cantAutorizada}" class="form-control" placeholder="<spring:message code="cantComprada" />">
+	                        	<input type="text" value="${compra.cantComprada}" id="cantComprada" name="cantComprada" autocomplete="cantComprada" value="${item.cantAutorizada}" class="form-control" placeholder="<spring:message code="cantComprada" />">
 	                        </div>
 	                      </div>
 	                    </div>
@@ -220,7 +222,7 @@
 			                    	<option value=""></option>
 			                    	<c:forEach items="${presentaciones}" var="presentacion">
 										<c:choose> 
-											<c:when test="${presentacion eq item.presentacion}">
+											<c:when test="${presentacion eq compra.presentacion}">
 												<option selected value="${presentacion}">${presentacion}</option>
 											</c:when>
 											<c:otherwise>
@@ -238,7 +240,7 @@
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i></span>
-	                        	<input type="text" id="contenidoPresentacion" name="contenidoPresentacion" autocomplete="contenidoPresentacion" value="${item.contenidoPresentacion}" class="form-control" placeholder="<spring:message code="contenidoPresentacion" />">
+	                        	<input type="text" value="${compra.contenidoPresentacion}" id="contenidoPresentacion" name="contenidoPresentacion" autocomplete="contenidoPresentacion" value="${item.contenidoPresentacion}" class="form-control" placeholder="<spring:message code="contenidoPresentacion" />">
 	                        </div>
 	                      </div>
 	                    </div>
@@ -248,35 +250,7 @@
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i></span>
-	                        	<input type="text" id="totalProducto" name="totalProducto" readonly autocomplete="totalProducto" value="${item.totalProducto}" class="form-control" placeholder="<spring:message code="totalProducto" />">
-	                        </div>
-	                      </div>
-	                    </div>
-	                    
-	                    <div class="form-group row">
-	                      <label class="col-md-2 col-form-label"><spring:message code="remCom" />:</label>
-	                      <div class="col-md-10">
-	                      	<div>
-		                        <select name="remCom" id="remCom" class="form-control select2-single">
-		                        	<option value=""><spring:message code="empty"/></option>
-			                    	<c:forEach items="${sinos}" var="sino">
-										<option value="${sino.catKey}"><spring:message code="${sino.messageKey}" /></option>
-									</c:forEach>
-			                    </select>
-	                        </div>
-	                      </div>
-	                    </div>
-	                    
-	                    <div class="form-group row">
-	                      <label class="col-md-2 col-form-label"><spring:message code="envEnt" />:</label>
-	                      <div class="col-md-10">
-	                      	<div>
-		                        <select name="envEnt" id="envEnt" class="form-control select2-single">
-		                        	<option value=""><spring:message code="empty"/></option>
-			                    	<c:forEach items="${sinos}" var="sino">
-										<option value="${sino.catKey}"><spring:message code="${sino.messageKey}" /></option>
-									</c:forEach>
-			                    </select>
+	                        	<input type="text" value="${compra.totalProducto}" id="totalProducto" name="totalProducto" readonly autocomplete="totalProducto" value="${item.totalProducto}" class="form-control" placeholder="<spring:message code="totalProducto" />">
 	                        </div>
 	                      </div>
 	                    </div>
@@ -286,7 +260,7 @@
 	                      <div class="col-md-10">
 	                      	<div class="input-group">
 	                      		<span class="input-group-addon"><i class="fa fa-sort-alpha-asc"></i></span>
-	                        	<input type="text" id="observaciones" name="observaciones" autocomplete="observaciones" value="${item.observaciones}" class="form-control" placeholder="<spring:message code="observacionesItem" />">
+	                        	<input type="text" id="observaciones" name="observaciones" autocomplete="observaciones" value="${compra.observaciones}" class="form-control" placeholder="<spring:message code="observacionesItem" />">
 	                        </div>
 	                      </div>
 	                    </div> 

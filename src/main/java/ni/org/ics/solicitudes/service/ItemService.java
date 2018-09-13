@@ -125,6 +125,20 @@ public class ItemService {
 		return  query.list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Item> getItemsAComprar(String usuarioactual) {
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("FROM Item item where " +
+				"item.ctrCompra.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0') and item.pasive='0' and "
+				+ "(item.estItem =:filtro)");
+		query.setParameter("filtro","COMPRA");
+		query.setParameter("usuarioactual", usuarioactual);
+		
+		// Retrieve all
+		return  query.list();
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public List<String> getPresentaciones() {

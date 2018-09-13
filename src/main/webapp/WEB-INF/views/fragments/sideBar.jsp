@@ -46,12 +46,15 @@
             </li>
 	        </sec:authorize>
 	        
-	        <sec:authorize url="/procesos/envios/">
+	        <sec:authorize url="/procesos/">
             <li class="nav-item nav-dropdown envios">
             	<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-drawer"></i><spring:message code="process" /></a>
             	<ul class="nav-dropdown-items">
 	                <li class="nav-item">
-	                    <a class="nav-link" href="<spring:url value="/procesos/envios/" htmlEscape="true "/>"><i class="icon-plane"></i><spring:message code="process.shipment" /></a>
+	                    <a class="nav-link" href="<spring:url value="/procesos/compras/" htmlEscape="true "/>"><i class="icon-basket-loaded"></i><spring:message code="process.shop" /></a>
+	                </li>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="<spring:url value="/procesos/entregas/" htmlEscape="true "/>"><i class="icon-cloud-download"></i><spring:message code="process.deliver" /></a>
 	                </li>
             	</ul>
             </li>

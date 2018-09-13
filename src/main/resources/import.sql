@@ -6,7 +6,7 @@ INSERT INTO roles (ROL) VALUES ('ROLE_SOLS');
 INSERT INTO roles (ROL) VALUES ('ROLE_APRB');
 INSERT INTO roles (ROL) VALUES ('ROLE_AUT');
 INSERT INTO roles (ROL) VALUES ('ROLE_ATN');
-INSERT INTO roles (ROL) VALUES ('ROLE_SHP');
+INSERT INTO roles (ROL) VALUES ('ROLE_PROC');
 INSERT INTO roles (ROL) VALUES ('ROLE_CAMBIO_CONTRASENA');
 INSERT INTO usuarios_sistema (NOMBRE_USUARIO, CUENTA_SINEXPIRAR, CUENTA_SINBLOQUEAR, CAMBIAR_CONTRASENA_ALLOGIN, DESCRIPCION, FECHA_REGISTRO, USUARIO_REGISTRO, CREDENCIAL_SINEXPIRAR, CORREO_ELECTRONICO, HABILITADO, FECHA_ULTACC, FECHA_ULTMODCRED, FECHA_ULTMOD, USUARIO_ULTMOD, CONTRASENA) VALUES ('admin', b'1', b'1', b'0', 'Administrador del Sistema', '2018-03-08 00:00:00', 'admin', b'1', 'waviles@icsnicaragua.org', b'1', '2018-03-08 00:00:00', '2018-03-08 00:00:00', '2018-03-08 00:00:00', 'admin', '6c36dc262b0e44be5811c2296669fc65643aec9dcaa4a76501e0a9508b633fd01ee59a207f8c6d68');
 INSERT INTO usuarios_roles (ROL, NOMBRE_USUARIO, IDENTIFICADOR_EQUIPO, ESTADO, PASIVO, FECHA_REGISTRO, USUARIO_REGISTRO) VALUES ('ROLE_ADMIN', 'admin', 'admin', '2', '0', '2018-03-08 00:00:00', 'admin');
@@ -62,7 +62,8 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'attend.
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'attend.deliver', 'Entregas pendientes','0','0',0);
 
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process', 'Procesos','0','0',0);
-INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process.shipment', 'Envíos','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process.shop', 'Compras','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process.deliver', 'Entregas','0','0',0);
 
 
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'admin', 'Administración','0','0',0);
@@ -134,7 +135,7 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_SO
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_APRB', 'Aprobar Solicitudes','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_AUT', 'Autorizar Solicitudes','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_ATN', 'Atender Solicitudes','0','0',0);
-INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_SHP', 'Hacer envíos','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_PROC', 'Procesos','0','0',0);
 
 /*Metadata*/
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'createdBy', 'Creado por','0','0',0);
@@ -193,6 +194,7 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ('sendDeli
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ('viewBalance', 'Ver saldo', '0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ('shopThis', 'Registrar compra de este producto', '0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ('shopOther', 'Comprar otro producto', '0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ('deliverThis', 'Entregar este producto', '0','0',0);
 
 /*Mensajes generales, todas las paginas*/
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'enabled', 'Habilitado','0','0',0);
@@ -332,6 +334,21 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'numFact
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'cantComprada', 'Cantidad comprada','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ingInv', 'Ingreso inventario','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'remCom', 'Quitar de compras pendientes','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'envEnt', 'Enviar a entrega','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'compraDisabled', 'Compra está inactiva!','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'class ni.org.ics.solicitudes.domain.Purchase', 'Compra','0','0',0);
+
+/*Entregas */
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'idEntrega', 'Identificador entrega','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'itemSolicitado', 'Insumo a entregar','0','0',0);	
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'fechaEntrega', 'Fecha de entrega','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'usrRecibeItem', 'Recibido por','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ent', 'Entregado','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'numRecibo', 'Recibo num','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'cantEntregada', 'Cantidad entregada','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'verificado', 'Entrega verificada','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'fechaVerificacion', 'Fecha de Verificacion','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'class ni.org.ics.solicitudes.domain.Deliver', 'Entrega','0','0',0);
 
 /*Catalogos*/
 

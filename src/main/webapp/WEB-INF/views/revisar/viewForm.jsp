@@ -424,9 +424,11 @@
     	  var count = table.rows( { selected: true } ).count();
     	  count>0?$('#items_compra').prop('disabled', false):$('#items_compra').prop('disabled', true);
     	  count>0?$('#items_entrega').prop('disabled', false):$('#items_entrega').prop('disabled', true);
-      } );
+      } )
 
 	  $(".finalizar").click(function(){ 
+		  	$('#motivoCancelado').val("");
+	    	$('#motivoCancelado').hide();
 			var nombreItem = $(this).data('nomitem');
 			$('#accionUrl').val($(this).data('whatever'));
 	    	$('#titulo').html('<h2 class="modal-title">'+"${confirmar}"+'</h2>');
@@ -488,6 +490,8 @@
 		} 
 
 	  function ejecutarLote(comprar) {
+		    $('#modalCompra').modal('hide');
+		    $('#modalEntrega').modal('hide');
 	    	var dataSelected = table.rows( { selected: true } ).data();
 	    	var itemsSeleccionados = "";
 	    	var urlAccion="";
@@ -496,34 +500,44 @@
 		        if(dataSelected[i][10]==="false"){
 	        		itemsSeleccionados=="" ? itemsSeleccionados = dataSelected[i][9] : itemsSeleccionados = itemsSeleccionados + "," + dataSelected[i][9];
 		        }
-	        }		
-	        $.blockUI({ message: "${waitmessage}" });
-		    $.post( urlAccion
-		            , {seleccionados:itemsSeleccionados}
-		            , function( data )
-		            {
-		    			resultado = JSON.parse(data);
-		    			if (resultado != "success") {
-		    				toastr.error(data, "${errormessage}", {
-		    					    closeButton: true,
-		    					    progressBar: true,
-		    					  });
-		    				$.unblockUI();
-						}
-						else{
-							$.blockUI({ message: "${successmessage}" });
-							setTimeout(function() { 
-					            $.unblockUI({ 
-					                onUnblock: function(){ window.location.href = "${solUrl}"; } 
-					            }); 
-					        }, 1000); 
-						}
-		            }
-		            , 'text' )
-			  		.fail(function(XMLHttpRequest, textStatus, errorThrown) {
-			    		alert( "error:" + errorThrown);
-			    		$.unblockUI();
-			  		});
+	        }	
+	        if(itemsSeleccionados!=""){	
+		        $.blockUI({ message: "${waitmessage}" });
+			    $.post( urlAccion
+			            , {seleccionados:itemsSeleccionados}
+			            , function( data )
+			            {
+			    			resultado = JSON.parse(data);
+			    			if (resultado != "success") {
+			    				toastr.error(data, "${errormessage}", {
+			    					    closeButton: true,
+			    					    progressBar: true,
+			    					  });
+			    				$.unblockUI();
+							}
+							else{
+								$.blockUI({ message: "${successmessage}" });
+								setTimeout(function() { 
+						            $.unblockUI({ 
+						                onUnblock: function(){ window.location.href = "${solUrl}"; } 
+						            }); 
+						        }, 1000); 
+							}
+			            }
+			            , 'text' )
+				  		.fail(function(XMLHttpRequest, textStatus, errorThrown) {
+				    		alert( "error:" + errorThrown);
+				    		$.unblockUI();
+				  		});
+	        }
+	        else{
+	        	toastr.error("No hay !", "${errormessage}", {
+				    closeButton: true,
+				    progressBar: true,
+				  });
+				$.unblockUI();
+				
+		    }
 	  }
 	
   </script>

@@ -1,4 +1,4 @@
-var ProcessPurchase = function () {
+var ProcessDelivery = function () {
 	
 	var handleDatePickers = function (idioma) {
 	    if (jQuery().datepicker) {
@@ -14,55 +14,31 @@ return {
   //main function to initiate the module
   init: function (parametros) {	 
 	  handleDatePickers('es');	
-  $('#lugarCompra, #cuenta, #selInsumo').select2({
+  $('#usrRecibeItem').select2({
 	    theme: "bootstrap",
 	    width: '100%'
   });
   
-  
-  $('#presentacion').select2({
-	  	tags:true,
-	  	placeholder:parametros.presentacion,
-	    theme: "bootstrap",
-	    width: '100%'
-  });
-  
-  $('#proveedor').select2({
-	  	tags:true,
-	  	placeholder:parametros.proveedor,
-	    theme: "bootstrap",
-	    width: '100%'
-});
 
   $.validator.setDefaults( {
     submitHandler: function () {
-      processCompra();
+    	processEntrega();
     }
   } );
 
-  $( '#add-shop-form' ).validate( {
+  $( '#add-entrega-form' ).validate( {
     rules: {
-    	idInsumo: {
+    	usrRecibeItem: {
             required: true
         },
-        cuenta: {
+        fechaEntrega: {
             required: true
         },
-        lugarCompra: {
-            required: true
-        },
-        fechaCompra: {
-            required: true
-        },
-        proveedor: {
-            required: true,
-            maxlength:255
-        },
-        numFactura: {
+        numRecibo: {
             required: true,
             maxlength:50
         },
-        cantComprada: {
+        cantEntregada: {
             required: true,
             min:1
         },
@@ -75,12 +51,6 @@ return {
             min:0.01
         },
         totalProducto: {
-            required: true
-        },
-        remCom: {
-            required: true
-        },
-        envEnt: {
             required: true
         },
         observaciones: {
@@ -107,24 +77,24 @@ return {
     }
   });
   
-  $("#cantComprada").change(
+  $("#cantEntregada").change(
      		function() {
-     			$("#totalProducto").val($("#cantComprada").val()*$("#contenidoPresentacion").val());
+     			$("#totalProducto").val($("#cantEntregada").val()*$("#contenidoPresentacion").val());
   });
   
   $("#contenidoPresentacion").change(
    		function() {
-   			$("#totalProducto").val($("#cantComprada").val()*$("#contenidoPresentacion").val());
+   			$("#totalProducto").val($("#cantEntregada").val()*$("#contenidoPresentacion").val());
   });
   
-  function processCompra(){
+  function processEntrega(){
 	  $.blockUI({ message: parametros.waitmessage });
-	    $.post( parametros.saveCompraUrl
-	            , $( '#add-shop-form' ).serialize()
+	    $.post( parametros.saveEntregaUrl
+	            , $( '#add-entrega-form' ).serialize()
 	            , function( data )
 	            {
-	    			compra = JSON.parse(data);
-	    			if (compra.idCompra === undefined) {
+	    			entrega = JSON.parse(data);
+	    			if (entrega.idEntrega === undefined) {
 	    				data = data.replace(/u0027/g,"");
 	    				toastr.error(data, parametros.errormessage, {
 	    					    closeButton: true,
@@ -134,10 +104,10 @@ return {
 					}
 					else{
 						$.blockUI({ message: parametros.successmessage });
-						$('#idCompra').val(compra.idCompra);
+						$('#idEntrega').val(entrega.idEntrega);
 						setTimeout(function() { 
 				            $.unblockUI({ 
-				                onUnblock: function(){ window.location.href = parametros.comprasPendUrl; } 
+				                onUnblock: function(){ window.location.href = parametros.entregasPendUrl; } 
 				            }); 
 				        }, 1000); 
 					}

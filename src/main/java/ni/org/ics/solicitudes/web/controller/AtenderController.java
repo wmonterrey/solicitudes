@@ -31,14 +31,17 @@ import com.google.gson.Gson;
 
 import ni.org.ics.solicitudes.domain.Account;
 import ni.org.ics.solicitudes.domain.Center;
+import ni.org.ics.solicitudes.domain.Deliver;
 import ni.org.ics.solicitudes.domain.Item;
 import ni.org.ics.solicitudes.domain.Purchase;
 import ni.org.ics.solicitudes.domain.Solicitud;
+import ni.org.ics.solicitudes.domain.relationship.UserCenter;
 import ni.org.ics.solicitudes.domain.util.ItemAux;
 import ni.org.ics.solicitudes.language.MessageResource;
 import ni.org.ics.solicitudes.service.CentroService;
 import ni.org.ics.solicitudes.service.CompraService;
 import ni.org.ics.solicitudes.service.CuentaService;
+import ni.org.ics.solicitudes.service.EntregasService;
 import ni.org.ics.solicitudes.service.InsumosService;
 import ni.org.ics.solicitudes.service.ItemService;
 import ni.org.ics.solicitudes.service.MessageResourceService;
@@ -72,6 +75,9 @@ public class AtenderController {
 	
 	@Resource(name="compraService")
 	private CompraService compraService;
+	
+	@Resource(name="entregasService")
+	private EntregasService entregasService;
 	
 	@Resource(name="centroService")
 	private CentroService centroService;
@@ -123,7 +129,7 @@ public class AtenderController {
             List<ItemAux> itemsaux = new ArrayList<ItemAux>();
             for (Item item:items) {
             	ItemAux it = new ItemAux();
-            	if (item.getEstItem().equals("COMPLE")) it.setEntregado(true);
+            	if (item.getEstItem().equals("COMPLE")||item.getEstItem().equals("ENTREG")) it.setEntregado(true);
             	if (item.getEstItem().equals("PENDIE")) revCompleto = false;
         		mr = null;
         		descCatalogo = null;
@@ -170,6 +176,20 @@ public class AtenderController {
     	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
     	Item item = this.itemService.getItem(idItem,usuarioActual.getUsername());
     	if(item!=null && item.getSolicitud().getEstSolicitud().equals("PENREV")){
+    		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    		WebAuthenticationDetails wad  = (WebAuthenticationDetails) authentication.getDetails();
+    		Deliver entrega = new Deliver();
+			String idEntrega = new UUID(usuarioActual.getUsername().hashCode(),new Date().hashCode()).toString();
+			entrega.setIdEntrega(idEntrega);
+			entrega.setItemSolicitado(item);
+			entrega.setRecordUser(usuarioActual.getUsername());
+			entrega.setRecordDate(new Date());
+			entrega.setCantEntregada(item.getCantAutorizada());
+			entrega.setContenidoPresentacion(item.getContenidoPresentacion());
+			entrega.setTotalProducto(item.getTotalProducto());
+			entrega.setPresentacion(item.getPresentacion());
+			entrega.setDeviceid(wad.getRemoteAddress());
+			this.entregasService.saveDeliver(entrega);
     		item.setEstItem("ENTREG");
     		this.itemService.saveItem(item);
     		redirectAttributes.addFlashAttribute("realizado", true);
@@ -246,9 +266,21 @@ public class AtenderController {
 			UserSistema usuarioActual = this.usuarioService.getUser(authentication.getName());
 			for(String idItem:seleccionados) {
 				Item item = this.itemService.getItem(idItem, usuarioActual.getUsername());
-					if(item!=null && item.getSolicitud().getEstSolicitud().equals("PENREV")){
+				if(item!=null && item.getSolicitud().getEstSolicitud().equals("PENREV")){
+		    		WebAuthenticationDetails wad  = (WebAuthenticationDetails) authentication.getDetails();
+		    		Deliver entrega = new Deliver();
+					String idEntrega = new UUID(usuarioActual.getUsername().hashCode(),new Date().hashCode()).toString();
+					entrega.setIdEntrega(idEntrega);
+					entrega.setItemSolicitado(item);
+					entrega.setRecordUser(usuarioActual.getUsername());
+					entrega.setRecordDate(new Date());
+					entrega.setCantEntregada(item.getCantAutorizada());
+					entrega.setContenidoPresentacion(item.getContenidoPresentacion());
+					entrega.setTotalProducto(item.getTotalProducto());
+					entrega.setPresentacion(item.getPresentacion());
+					entrega.setDeviceid(wad.getRemoteAddress());
+					this.entregasService.saveDeliver(entrega);
 					item.setEstItem("ENTREG");
-					WebAuthenticationDetails wad  = (WebAuthenticationDetails) authentication.getDetails();
 					item.setDeviceid(wad.getRemoteAddress());
 					//Actualiza el item
 					this.itemService.saveItem(item);
@@ -300,7 +332,7 @@ public class AtenderController {
     	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
     	MessageResource mr = null;
 		String descCatalogo = null;
-    	List<Item> itemsComprar = this.itemService.getItemsFiltrados("COMPRA",usuarioActual.getUsername());
+    	List<Item> itemsComprar = this.itemService.getItemsAComprar(usuarioActual.getUsername());
     	for (Item item:itemsComprar) {
     		mr = null;
     		descCatalogo = null;
@@ -325,6 +357,20 @@ public class AtenderController {
     	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
     	Item item = this.itemService.getItem(idItem,usuarioActual.getUsername());
     	if(item!=null){
+    		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    		WebAuthenticationDetails wad  = (WebAuthenticationDetails) authentication.getDetails();
+    		Deliver entrega = new Deliver();
+			String idEntrega = new UUID(usuarioActual.getUsername().hashCode(),new Date().hashCode()).toString();
+			entrega.setIdEntrega(idEntrega);
+			entrega.setItemSolicitado(item);
+			entrega.setRecordUser(usuarioActual.getUsername());
+			entrega.setRecordDate(new Date());
+			entrega.setCantEntregada(item.getCantAutorizada());
+			entrega.setContenidoPresentacion(item.getContenidoPresentacion());
+			entrega.setTotalProducto(item.getTotalProducto());
+			entrega.setPresentacion(item.getPresentacion());
+			entrega.setDeviceid(wad.getRemoteAddress());
+			this.entregasService.saveDeliver(entrega);
     		item.setEstItem("ENTREG");
     		this.itemService.saveItem(item);
     		List<Item> items = this.itemService.getItemsFiltroNumSolicitud(item.getSolicitud().getNumSolicitud(), usuarioActual.getUsername(),"CANCEL");
@@ -406,6 +452,7 @@ public class AtenderController {
 	        , @RequestParam( value="contenidoPresentacion", required=true ) Float contenidoPresentacion
 	        , @RequestParam( value="totalProducto", required=true ) Float totalProducto
 	        , @RequestParam( value="remCom", required=true, defaultValue="1" ) String remCom
+	        , @RequestParam( value="envEnt", required=true, defaultValue="1" ) String envEnt
 	        , @RequestParam( value="observaciones", required=true ) String observaciones
 	        )
 	{
@@ -449,7 +496,138 @@ public class AtenderController {
 	    	if (aRevision) nextStat = "PENREV";
 	    	item.getSolicitud().setEstSolicitud(nextStat);
 	    	this.solicitudesService.saveSolicitud(item.getSolicitud());
+	    	//Enviar la compra a entregar si el usuario lo eligió
+			if(envEnt.equals("1")) {
+				Deliver entrega = new Deliver();
+				String idEntrega = new UUID(authentication.getName().hashCode(),new Date().hashCode()).toString();
+				entrega.setIdEntrega(idEntrega);
+				entrega.setItemSolicitado(item);
+				entrega.setIdCompra(idCompra);
+				entrega.setRecordUser(SecurityContextHolder.getContext().getAuthentication().getName());
+				entrega.setRecordDate(new Date());
+				entrega.setCantEntregada(compra.getCantComprada());
+				entrega.setContenidoPresentacion(compra.getContenidoPresentacion());
+				entrega.setTotalProducto(compra.getTotalProducto());
+				entrega.setPresentacion(compra.getPresentacion());
+				entrega.setDeviceid(wad.getRemoteAddress());
+				this.entregasService.saveDeliver(entrega);
+			}
 			return createJsonResponse(compra);
+    	}
+		catch (DataIntegrityViolationException e){
+			String message = e.getMostSpecificCause().getMessage();
+			Gson gson = new Gson();
+		    String json = gson.toJson(message);
+			return new ResponseEntity<String>( json, HttpStatus.CREATED);
+		}
+		catch(Exception e){
+			Gson gson = new Gson();
+		    String json = gson.toJson(e.toString());
+			return new ResponseEntity<String>( json, HttpStatus.CREATED);
+		}
+    	
+	}
+	
+	
+	/*Muestra la pagina de los items enviados a entrega que no se ha realizado */
+	@RequestMapping(value = "/entregar/", method = RequestMethod.GET)
+    public String obtenerPendientesEntrega(Model model) { 	
+    	logger.debug("Mostrando Pagina de busqueda de pendientes de entrega en JSP");
+    	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    	MessageResource mr = null;
+		String descCatalogo = null;
+    	List<Deliver> itemsEntregar = this.entregasService.getEntregasPendienteUsuario(usuarioActual.getUsername());
+    	for (Deliver entrega:itemsEntregar) {
+    		mr = null;
+    		descCatalogo = null;
+    		mr = this.messageResourceService.getMensaje(entrega.getItemSolicitado().getInsumo().getUndMedida(),"CAT_UND_MED");
+    		if(mr!=null) descCatalogo = (LocaleContextHolder.getLocale().getLanguage().equals("en")) ? mr.getEnglish(): mr.getSpanish();
+    		if(descCatalogo!=null) entrega.getItemSolicitado().getInsumo().setUndMedida(descCatalogo);
+    	}
+    	model.addAttribute("itemsEntregar", itemsEntregar);
+    	return "entregar/list";
+	}
+	
+	/*Presenta el formulario para el ingreso de una entrega*/
+	@RequestMapping(value = "/entregar/{idEntrega}/", method = RequestMethod.GET)
+	public String initEntregaForm(@PathVariable("idEntrega") String idEntrega, Model model) {
+    	logger.debug("Entregar item");
+    	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    	Deliver entrega = this.entregasService.getDeliver(idEntrega,usuarioActual.getUsername());
+    	
+    	if(entrega!=null && entrega.getEntregado().equals("0")){
+    		model.addAttribute("entrega", entrega);
+    		List<UserCenter> usuarios = this.centroService.getUsersCenter(entrega.getItemSolicitado().getSolicitud().getCtrSolicitud().getIdCentro());
+    		model.addAttribute("usuarios", usuarios);
+    		return "entregar/enterForm";
+    	}
+    	else{
+			return "403";
+		}
+	}
+	
+	/*Registra la entrega en la base de datos*/
+	@RequestMapping( value="/entregar/saveEntrega/", method=RequestMethod.POST)
+	public ResponseEntity<String> processEntregarItemForm( @RequestParam(value="idEntrega", required=true ) String idEntrega
+	        , @RequestParam(value="idItem", required=true) String idItem
+	        , @RequestParam( value="usrRecibeItem", required=true ) String usrRecibeItem
+	        , @RequestParam( value="fechaEntrega", required=true) String fechaEntrega
+	        , @RequestParam( value="numRecibo", required=true ) String numRecibo
+	        , @RequestParam( value="cantEntregada", required=true ) Integer cantEntregada
+	        , @RequestParam( value="presentacion", required=true ) String presentacion
+	        , @RequestParam( value="contenidoPresentacion", required=true ) Float contenidoPresentacion
+	        , @RequestParam( value="totalProducto", required=true ) Float totalProducto
+	        , @RequestParam( value="observaciones", required=true ) String observaciones
+	        )
+	{
+    	try{
+    		String nextStat = "SOLFIN";
+    		boolean ultimo=true;
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Item itemSolicitado = this.itemService.getItem(idItem);
+			Deliver entrega = this.entregasService.getDeliver(idEntrega, authentication.getName());
+			entrega.setRecordUser(SecurityContextHolder.getContext().getAuthentication().getName());
+			entrega.setRecordDate(new Date());
+			entrega.setItemSolicitado(itemSolicitado);
+			entrega.setUsrRecibeItem(this.usuarioService.getUser(usrRecibeItem));
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date dateEntrega = formatter.parse(fechaEntrega);
+			entrega.setEntregado("1");
+			entrega.setFechaEntrega(dateEntrega);
+			entrega.setNumRecibo(numRecibo);
+			entrega.setCantEntregada(cantEntregada);
+			entrega.setPresentacion(presentacion);
+			entrega.setContenidoPresentacion(contenidoPresentacion);
+			entrega.setTotalProducto(totalProducto);
+			entrega.setObservaciones(observaciones);
+			WebAuthenticationDetails wad  = (WebAuthenticationDetails) authentication.getDetails();
+			entrega.setDeviceid(wad.getRemoteAddress());
+			//Actualiza la compra
+			this.entregasService.saveDeliver(entrega);
+			//Obtener todas las entregas hechas de este item
+			List<Deliver> delThisItem = this.entregasService.getEntregasThisItem(idItem);
+			//Suma total de producto para comparar si ya fue entregado lo autorizado, si es así, actualiza el estado del item a completo
+			Float totalProductoTodasEntregas=0F;
+			for (Deliver ent:delThisItem) {
+				totalProductoTodasEntregas = totalProductoTodasEntregas+ent.getTotalProducto();
+			}
+			if(totalProductoTodasEntregas>=itemSolicitado.getTotalProducto()) {
+				itemSolicitado.setEstItem("COMPLE");
+				this.itemService.saveItem(itemSolicitado);
+			}
+			
+			//Verificar si era el ultimo por entregar para actualizar la solicitud a finalizada
+			List<Item> items = this.itemService.getItemsFiltroNumSolicitud(itemSolicitado.getSolicitud().getNumSolicitud(), SecurityContextHolder.getContext().getAuthentication().getName(),"CANCEL");
+	    	for (Item itemMod:items) {
+	    		if (!itemMod.getEstItem().equals("COMPLE")) ultimo = false;
+	    	}
+	    	
+	    	//Si todos estan completos pone la solicitud como finalizada
+	    	if (ultimo){
+	    		itemSolicitado.getSolicitud().setEstSolicitud(nextStat);
+	    		this.solicitudesService.saveSolicitud(itemSolicitado.getSolicitud());
+	    	}
+			return createJsonResponse(entrega);
     	}
 		catch (DataIntegrityViolationException e){
 			String message = e.getMostSpecificCause().getMessage();

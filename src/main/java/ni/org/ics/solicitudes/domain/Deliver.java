@@ -26,6 +26,7 @@ public class Deliver extends BaseMetaData implements Auditable{
 	private String idEntrega;
 	private Item itemSolicitado;
 	private UserSistema usrRecibeItem;
+	private String entregado="0";
 	private Date fechaEntrega;
 	private String numRecibo;
 	private String idCompra;
@@ -34,8 +35,9 @@ public class Deliver extends BaseMetaData implements Auditable{
 	private Float contenidoPresentacion;
 	private Float totalProducto;
 	private String observaciones;
-	private String verificado;
+	private String verificado="0";
 	private Date fechaVerificacion;
+	private String motivoCancelada;
 	
 	@Id
 	@Column(name = "ID_ENTREGA", nullable = false, length =50)
@@ -60,7 +62,7 @@ public class Deliver extends BaseMetaData implements Auditable{
 		this.itemSolicitado = itemSolicitado;
 	}
 	
-	@ManyToOne(optional=false)
+	@ManyToOne(optional=true)
 	@JoinColumn(name="USUARIO_DELIVER")
 	@ForeignKey(name = "DELIVER_USUARIOS_FK")
 	public UserSistema getUsrRecibeItem() {
@@ -73,7 +75,7 @@ public class Deliver extends BaseMetaData implements Auditable{
 	}
 
 
-	@Column(name = "FECHA", nullable = false)
+	@Column(name = "FECHA", nullable = true)
 	public Date getFechaEntrega() {
 		return fechaEntrega;
 	}
@@ -132,7 +134,7 @@ public class Deliver extends BaseMetaData implements Auditable{
 		this.totalProducto = totalProducto;
 	}
 	
-	@Column(name = "OBSERVACIONES", nullable = true)
+	@Column(name = "OBSERVACIONES", nullable = true, length =755)
 	public String getObservaciones() {
 		return observaciones;
 	}
@@ -141,7 +143,7 @@ public class Deliver extends BaseMetaData implements Auditable{
 	}
 
 	
-	@Column(name = "VERIF", nullable = true)
+	@Column(name = "VERIF", nullable = false, length =1)
 	public String getVerificado() {
 		return verificado;
 	}
@@ -149,6 +151,18 @@ public class Deliver extends BaseMetaData implements Auditable{
 
 	public void setVerificado(String verificado) {
 		this.verificado = verificado;
+	}
+	
+	
+
+	@Column(name = "ENT", nullable = false, length =1)
+	public String getEntregado() {
+		return entregado;
+	}
+
+
+	public void setEntregado(String entregado) {
+		this.entregado = entregado;
 	}
 
 
@@ -161,6 +175,33 @@ public class Deliver extends BaseMetaData implements Auditable{
 	public void setFechaVerificacion(Date fechaVerificacion) {
 		this.fechaVerificacion = fechaVerificacion;
 	}
+	
+	@Column(name = "MOTIVO_CANCELADO", nullable = true, length =200)
+	public String getMotivoCancelada() {
+		return motivoCancelada;
+	}
+	public void setMotivoCancelada(String motivoCancelada) {
+		this.motivoCancelada = motivoCancelada;
+	}
+	
+	@Override
+	public String toString(){
+		return this.getItemSolicitado().getSolicitud().getNumSolicitud() +"-"+  this.getItemSolicitado().getInsumo().getCodigoBrand();
+	}
+	@Override
+	public boolean equals(Object other) {
+		
+		if ((this == other))
+			return true;
+		if ((other == null))
+			return false;
+		if (!(other instanceof Purchase))
+			return false;
+		
+		Deliver castOther = (Deliver) other;
+
+		return (this.getIdEntrega().equals(castOther.getIdEntrega()));
+	}
 
 
 	@Override
@@ -168,7 +209,7 @@ public class Deliver extends BaseMetaData implements Auditable{
 		return true;
 	}
 
-
+	@Column(name = "ID_COMPRA", nullable = true, length =50)
 	public String getIdCompra() {
 		return idCompra;
 	}

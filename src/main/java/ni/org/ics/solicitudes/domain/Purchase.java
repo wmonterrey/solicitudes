@@ -33,6 +33,7 @@ public class Purchase extends BaseMetaData implements Auditable{
 	private String presentacion;
 	private Float contenidoPresentacion;
 	private Float totalProducto;
+	private String motivoCancelada;
 	private String observaciones;
 	
 	@Id
@@ -70,7 +71,7 @@ public class Purchase extends BaseMetaData implements Auditable{
 		this.cuenta = cuenta;
 	}
 	
-	@Column(name = "LUGAR", nullable = false, length =50)
+	@Column(name = "LUGAR", nullable = false, length =150)
 	public String getLugarCompra() {
 		return lugarCompra;
 	}
@@ -161,7 +162,33 @@ public class Purchase extends BaseMetaData implements Auditable{
 		this.observaciones = observaciones;
 	}
 
+	@Column(name = "MOTIVO_CANCELADO", nullable = true, length =200)
+	public String getMotivoCancelada() {
+		return motivoCancelada;
+	}
+	public void setMotivoCancelada(String motivoCancelada) {
+		this.motivoCancelada = motivoCancelada;
+	}
 
+	@Override
+	public String toString(){
+		return this.getItem().getCodigoBrand() + " - " + this.numFactura + " - " + this.proveedor ;
+	}
+	@Override
+	public boolean equals(Object other) {
+		
+		if ((this == other))
+			return true;
+		if ((other == null))
+			return false;
+		if (!(other instanceof Purchase))
+			return false;
+		
+		Purchase castOther = (Purchase) other;
+
+		return (this.getIdCompra().equals(castOther.getIdCompra()));
+	}
+	
 	@Override
 	public boolean isFieldAuditable(String fieldname) {
 		return true;
