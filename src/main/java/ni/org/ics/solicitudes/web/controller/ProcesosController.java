@@ -33,8 +33,10 @@ import ni.org.ics.solicitudes.domain.Account;
 import ni.org.ics.solicitudes.domain.Center;
 import ni.org.ics.solicitudes.domain.Deliver;
 import ni.org.ics.solicitudes.domain.Insumo;
+import ni.org.ics.solicitudes.domain.Item;
 import ni.org.ics.solicitudes.domain.Purchase;
 import ni.org.ics.solicitudes.domain.audit.AuditTrail;
+import ni.org.ics.solicitudes.domain.relationship.UserCenter;
 import ni.org.ics.solicitudes.language.MessageResource;
 import ni.org.ics.solicitudes.service.AuditTrailService;
 import ni.org.ics.solicitudes.service.CentroService;
@@ -42,6 +44,7 @@ import ni.org.ics.solicitudes.service.CompraService;
 import ni.org.ics.solicitudes.service.CuentaService;
 import ni.org.ics.solicitudes.service.EntregasService;
 import ni.org.ics.solicitudes.service.InsumosService;
+import ni.org.ics.solicitudes.service.ItemService;
 import ni.org.ics.solicitudes.service.MessageResourceService;
 import ni.org.ics.solicitudes.service.UsuarioService;
 import ni.org.ics.solicitudes.users.model.UserSistema;
@@ -76,6 +79,9 @@ public class ProcesosController {
 	
 	@Resource(name="entregasService")
 	private EntregasService entregasService;
+	
+	@Resource(name="itemService")
+	private ItemService itemService;
 	
 
 	@RequestMapping(value = "/compras/", method = RequestMethod.GET)
@@ -202,7 +208,7 @@ public class ProcesosController {
     		this.compraService.savePurchase(solicitud);
     		redirectAttributes.addFlashAttribute("compraDeshabilitada", true);
     		redirectAttributes.addFlashAttribute("nombreCompra", solicitud.getItem().getCodigoBrand());
-    		redirecTo = "redirect:/compras/" + solicitud.getIdCompra() + "/";
+    		redirecTo = "redirect:/procesos/compras/" + solicitud.getIdCompra() + "/";
     	}
     	else{
     		redirecTo = "403";
@@ -316,9 +322,9 @@ public class ProcesosController {
 	@RequestMapping("/entregas/{idEntrega}/")
     public ModelAndView showEntrega(@PathVariable("idEntrega") String idEntrega) {
     	ModelAndView mav;
-    	boolean esactiva = false;
+    	boolean esactiva = false, entregada=false;
     	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
-    	Deliver entrega = this.entregasService.getDeliver(idEntrega, usuarioActual.getUsername());
+    	Deliver entrega = this.entregasService.getDeliver2(idEntrega, usuarioActual.getUsername());
     	
         if(entrega==null){
         	mav = new ModelAndView("403");
@@ -330,12 +336,117 @@ public class ProcesosController {
         	if(entrega.getPasive()=='0') {
         		esactiva=true;
         	}
+        	if(entrega.getEntregado().equals("1")) {
+        		entregada=true;
+        	}
         	mav.addObject("esactiva",esactiva);
+        	mav.addObject("entregada",entregada);
             List<AuditTrail> bitacora = auditTrailService.getBitacora(idEntrega);
             mav.addObject("bitacora",bitacora);
         }
         return mav;
     }
+	
+	@RequestMapping(value = "/entregas/editEntrega/{idEntrega}/", method = RequestMethod.GET)
+	public String initUpdateEntregaForm(@PathVariable("idEntrega") String idEntrega, Model model) {
+    	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    	Deliver entrega = this.entregasService.getDeliver(idEntrega, usuarioActual.getUsername());
+		if(entrega!=null){
+			model.addAttribute("entrega",entrega);
+			List<UserCenter> usuarios = this.centroService.getUsersCenter(entrega.getItemSolicitado().getSolicitud().getCtrSolicitud().getIdCentro());
+    		model.addAttribute("usuarios", usuarios);
+    		List<MessageResource> sinos = messageResourceService.getCatalogo("CAT_SINO");
+        	model.addAttribute("sinos", sinos);
+        	model.addAttribute("hoy", new Date());
+			return "procesos/editEntrega";
+		}
+		else{
+			return "403";
+		}
+	}
+	
+	@RequestMapping("/entregas/desEntrega/{idEntrega}/{motivo}/")
+    public String disableEntrega(@PathVariable("idEntrega") String idEntrega, @PathVariable("motivo") String motivo, 
+    		RedirectAttributes redirectAttributes) {
+    	String redirecTo="404";
+    	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    	Deliver entrega = this.entregasService.getDeliver2(idEntrega, usuarioActual.getUsername());
+    	if(entrega!=null){
+    		entrega.setPasive('1');
+    		entrega.setMotivoCancelada(motivo);
+    		this.entregasService.saveDeliver(entrega);
+    		redirectAttributes.addFlashAttribute("entregaDeshabilitada", true);
+    		redirectAttributes.addFlashAttribute("nombreEntrega", entrega.getItemSolicitado().getInsumo().getCodigoBrand());
+    		redirecTo = "redirect:/procesos/entregas/" + entrega.getIdEntrega() + "/";
+    	}
+    	else{
+    		redirecTo = "403";
+    	}
+    	return redirecTo;	
+    }
+	
+	
+	/*Registra la entrega en la base de datos*/
+	@RequestMapping( value="/entregas/saveEntrega/", method=RequestMethod.POST)
+	public ResponseEntity<String> processEntregarItemForm( @RequestParam(value="idEntrega", required=false, defaultValue="" ) String idEntrega
+	        , @RequestParam(value="idItem", required=true) String idItem
+	        , @RequestParam( value="usrRecibeItem", required=true ) String usrRecibeItem
+	        , @RequestParam( value="fechaEntrega", required=true) String fechaEntrega
+	        , @RequestParam( value="numRecibo", required=true ) String numRecibo
+	        , @RequestParam( value="cantEntregada", required=true ) Integer cantEntregada
+	        , @RequestParam( value="presentacion", required=true ) String presentacion
+	        , @RequestParam( value="contenidoPresentacion", required=true ) Float contenidoPresentacion
+	        , @RequestParam( value="totalProducto", required=true ) Float totalProducto
+	        , @RequestParam( value="observaciones", required=true ) String observaciones
+	        )
+	{
+    	try{
+    		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    		
+    		Deliver entrega = new Deliver();
+			//Si el idEntrega viene en blanco es una nueva compra
+			if (idEntrega.equals("")){
+				idEntrega = new UUID(authentication.getName().hashCode(),new Date().hashCode()).toString();
+				entrega.setIdCompra(idEntrega);
+				entrega.setRecordUser(SecurityContextHolder.getContext().getAuthentication().getName());
+				entrega.setRecordDate(new Date());
+			}
+			else{
+				entrega = this.entregasService.getDeliver(idEntrega, authentication.getName());
+			}
+			
+			Item itemSolicitado = this.itemService.getItem(idItem);
+			entrega.setItemSolicitado(itemSolicitado);
+			entrega.setUsrRecibeItem(this.usuarioService.getUser(usrRecibeItem));
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date dateEntrega = formatter.parse(fechaEntrega);
+			entrega.setEntregado("1");
+			entrega.setFechaEntrega(dateEntrega);
+			entrega.setNumRecibo(numRecibo);
+			entrega.setCantEntregada(cantEntregada);
+			entrega.setPresentacion(presentacion);
+			entrega.setContenidoPresentacion(contenidoPresentacion);
+			entrega.setTotalProducto(totalProducto);
+			entrega.setObservaciones(observaciones);
+			WebAuthenticationDetails wad  = (WebAuthenticationDetails) authentication.getDetails();
+			entrega.setDeviceid(wad.getRemoteAddress());
+			//Actualiza la compra
+			this.entregasService.saveDeliver(entrega);
+			return createJsonResponse(entrega);
+    	}
+		catch (DataIntegrityViolationException e){
+			String message = e.getMostSpecificCause().getMessage();
+			Gson gson = new Gson();
+		    String json = gson.toJson(message);
+			return new ResponseEntity<String>( json, HttpStatus.CREATED);
+		}
+		catch(Exception e){
+			Gson gson = new Gson();
+		    String json = gson.toJson(e.toString());
+			return new ResponseEntity<String>( json, HttpStatus.CREATED);
+		}
+    	
+	}
 	
 	 private ResponseEntity<String> createJsonResponse( Object o ){
 		    HttpHeaders headers = new HttpHeaders();

@@ -47,6 +47,16 @@ public class EntregasService {
 		return query.list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Deliver> getEntregasPendienteVerificarUsuario(String username) {
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("FROM Deliver deliver where deliver.verificado = '0' and deliver.entregado = '1' and "
+				+ "deliver.usrRecibeItem.username =:usuarioactual and deliver.pasive='0' ");
+		query.setParameter("usuarioactual", username);
+		return query.list();
+	}
+	
 	/**
 	 * Regresa una lista de entregas de un item especifico
 	 * 
@@ -88,6 +98,23 @@ public class EntregasService {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("FROM Deliver d where " +
 				"d.idEntrega =:idEntrega and d.itemSolicitado.solicitud.ctrSolicitud.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0') and d.pasive='0'");
+		query.setParameter("idEntrega",idEntrega);
+		query.setParameter("usuarioactual",username);
+		Deliver entrega = (Deliver) query.uniqueResult();
+		return entrega;
+	}
+	
+	/**
+	 * Regresa un Deliver
+	 * 
+	 * @return un <code>Deliver</code>
+	 */
+
+	public Deliver getDeliver2(String idEntrega, String username) {
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("FROM Deliver d where " +
+				"d.idEntrega =:idEntrega and d.itemSolicitado.solicitud.ctrSolicitud.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0')");
 		query.setParameter("idEntrega",idEntrega);
 		query.setParameter("usuarioactual",username);
 		Deliver entrega = (Deliver) query.uniqueResult();

@@ -78,8 +78,6 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <spring:url value="/procesos/entregas/addEntregaa/"	var="newEntrega"/>	
-              	  <button id="lista_entregas_new" onclick="location.href='${fn:escapeXml(newEntrega)}'" type="button" class="btn btn-outline-primary"><i class="fa fa-plus"></i>&nbsp; <spring:message code="add" /></button><br><br>
                   <div class="row">
                   	<div class="col-md-10">
 	                  	<form action="#" autocomplete="off" id="entregas-form">

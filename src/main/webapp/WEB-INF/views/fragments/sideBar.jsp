@@ -25,6 +25,9 @@
 	                    <a class="nav-link" href="<spring:url value="/sols/autorizar/" htmlEscape="true "/>"><i class="icon-key"></i><spring:message code="sols.aut" /></a>
 	                </li>
 	                </sec:authorize>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="<spring:url value="/sols/verificar/" htmlEscape="true "/>"><i class="icon-like"></i><spring:message code="sols.verif" /></a>
+	                </li>
             	</ul>
             </li>
 	        </sec:authorize>

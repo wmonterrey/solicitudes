@@ -88,8 +88,10 @@
 	                  <ul class="nav nav-tabs float-right">
 						  <li class="nav-item dropdown">
 						    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="icon-settings">&nbsp;<spring:message code="actions" /></i></a>
-						    <div class="dropdown-menu">						    	
-						    	<a class="dropdown-item" href="${fn:escapeXml(editUrl)}"><i class="fa fa-edit"></i> <spring:message code="edit" /></a>
+						    <div class="dropdown-menu">	
+						    	<c:if test = "${entregada}">					    	
+						    		<a class="dropdown-item" href="${fn:escapeXml(editUrl)}"><i class="fa fa-edit"></i> <spring:message code="edit" /></a>
+						    	</c:if>
 						    	<a href="#" class="dropdown-item desact" data-nomitem="${entrega.idEntrega}" data-toggle="modal" data-whatever="${fn:escapeXml(disableUrl)}"><i class="fa fa-trash-o"></i> <spring:message code="delete" /></a>
 						    </div>
 						  </li>

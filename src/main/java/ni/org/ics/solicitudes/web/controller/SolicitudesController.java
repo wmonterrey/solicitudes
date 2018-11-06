@@ -31,12 +31,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.gson.Gson;
 
 import ni.org.ics.solicitudes.domain.Center;
+import ni.org.ics.solicitudes.domain.Deliver;
 import ni.org.ics.solicitudes.domain.Item;
 import ni.org.ics.solicitudes.domain.Solicitud;
 import ni.org.ics.solicitudes.domain.audit.AuditTrail;
 import ni.org.ics.solicitudes.language.MessageResource;
 import ni.org.ics.solicitudes.service.AuditTrailService;
 import ni.org.ics.solicitudes.service.CentroService;
+import ni.org.ics.solicitudes.service.EntregasService;
 import ni.org.ics.solicitudes.service.ItemService;
 import ni.org.ics.solicitudes.service.MessageResourceService;
 import ni.org.ics.solicitudes.service.SolicitudesService;
@@ -63,6 +65,9 @@ public class SolicitudesController {
 	
 	@Resource(name="itemService")
 	private ItemService itemService;
+	
+	@Resource(name="entregasService")
+	private EntregasService entregasService;
 	
 	@Resource(name="auditTrailService")
 	private AuditTrailService auditTrailService;
@@ -336,6 +341,40 @@ public class SolicitudesController {
     	return redirecTo;	
     }
     
+    /* Llamado desde el menú lista de items pendiente de verificación*/
+	@RequestMapping(value = "/verificar/"	, method = RequestMethod.GET)
+    public String obtenerFaltaVerificar(Model model) throws ParseException { 	
+    	logger.debug("Mostrando Pagina de busqueda de items a verificar en JSP");
+    	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    	
+    	List<Deliver> itemsEntregar = this.entregasService.getEntregasPendienteVerificarUsuario(usuarioActual.getUsername());
+    	model.addAttribute("itemsEntregar", itemsEntregar);
+    	return "verificar/list";
+	}
+	
+    /**
+     * Custom handler for verifying a deliver
+     */
+    @RequestMapping("/verificar/{idEntrega}/")
+    public String verificarEntrega(@PathVariable("idEntrega") String idEntrega, 
+    		RedirectAttributes redirectAttributes) {
+    	String redirecTo="404";
+    	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+		WebAuthenticationDetails wad  = (WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+		Deliver deliver = this.entregasService.getDeliver(idEntrega, usuarioActual.getUsername());
+    	if(deliver!=null && deliver.getEntregado().equals("1") && deliver.getUsrRecibeItem().getUsername().equals(usuarioActual.getUsername())){
+    		deliver.setVerificado("1");
+    		deliver.setFechaVerificacion(new Date());
+    		deliver.setDeviceid(wad.getRemoteAddress());
+    		this.entregasService.saveDeliver(deliver);
+    		redirecTo = "redirect:/sols/verificar/";
+    		redirectAttributes.addFlashAttribute("entregaVerificada", true);
+    	}
+    	else{
+    		redirecTo = "403";
+    	}
+    	return redirecTo;	
+    }
     
     private ResponseEntity<String> createJsonResponse( Object o ){
 	    HttpHeaders headers = new HttpHeaders();

@@ -56,6 +56,7 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'sols', 
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'sols.enter', 'Ingreso y seguimiento','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'sols.aprob', 'Aprobar solicitud','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'sols.aut', 'Autorizar solicitud','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'sols.verif', 'Verificar entregas','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'attend', 'Atender Solicitudes','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'attend.verif', 'Revisar autorizadas','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'attend.shop', 'Compras pendientes','0','0',0);
