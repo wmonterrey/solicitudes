@@ -47,9 +47,9 @@ import ni.org.ics.solicitudes.users.model.UserSistema;
 
 
 @Controller
-@RequestMapping("/sols/*")
-public class SolicitudesController {
-	private static final Logger logger = LoggerFactory.getLogger(SolicitudesController.class);
+@RequestMapping("/inventario/*")
+public class InventarioController {
+	private static final Logger logger = LoggerFactory.getLogger(InventarioController.class);
 	
 	@Resource(name="messageResourceService")
 	private MessageResourceService messageResourceService;
@@ -73,9 +73,9 @@ public class SolicitudesController {
 	private AuditTrailService auditTrailService;
 	
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/entradas/", method = RequestMethod.GET)
     public String obtenerSolicitudes(Model model) throws ParseException { 	
-    	logger.debug("Mostrando Pagina de busqueda de solicitudes en JSP");
+    	logger.debug("Mostrando Pagina de busqueda de inventario en JSP");
     	UserSistema usuarioActual = this.usuarioService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
     	List<Center> centros = this.centroService.getCentrosActivosDelusuario(usuarioActual.getUsername());
     	model.addAttribute("centros", centros);
@@ -85,7 +85,7 @@ public class SolicitudesController {
     	model.addAttribute("tipos", tipos);
     	List<UserSistema> usuarios = this.usuarioService.getActiveUsers();
     	model.addAttribute("usuarios", usuarios);
-    	return "solicitudes/search";
+    	return "inventario/entradas";
 	}
 	
 	

@@ -7,6 +7,7 @@ INSERT INTO roles (ROL) VALUES ('ROLE_APRB');
 INSERT INTO roles (ROL) VALUES ('ROLE_AUT');
 INSERT INTO roles (ROL) VALUES ('ROLE_ATN');
 INSERT INTO roles (ROL) VALUES ('ROLE_PROC');
+INSERT INTO roles (ROL) VALUES ('ROLE_INV');
 INSERT INTO roles (ROL) VALUES ('ROLE_CAMBIO_CONTRASENA');
 INSERT INTO usuarios_sistema (NOMBRE_USUARIO, CUENTA_SINEXPIRAR, CUENTA_SINBLOQUEAR, CAMBIAR_CONTRASENA_ALLOGIN, DESCRIPCION, FECHA_REGISTRO, USUARIO_REGISTRO, CREDENCIAL_SINEXPIRAR, CORREO_ELECTRONICO, HABILITADO, FECHA_ULTACC, FECHA_ULTMODCRED, FECHA_ULTMOD, USUARIO_ULTMOD, CONTRASENA) VALUES ('admin', b'1', b'1', b'0', 'Administrador del Sistema', '2018-03-08 00:00:00', 'admin', b'1', 'waviles@icsnicaragua.org', b'1', '2018-03-08 00:00:00', '2018-03-08 00:00:00', '2018-03-08 00:00:00', 'admin', '6c36dc262b0e44be5811c2296669fc65643aec9dcaa4a76501e0a9508b633fd01ee59a207f8c6d68');
 INSERT INTO usuarios_roles (ROL, NOMBRE_USUARIO, IDENTIFICADOR_EQUIPO, ESTADO, PASIVO, FECHA_REGISTRO, USUARIO_REGISTRO) VALUES ('ROLE_ADMIN', 'admin', 'admin', '2', '0', '2018-03-08 00:00:00', 'admin');
@@ -65,6 +66,11 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'attend.
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process', 'Procesos','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process.shop', 'Compras','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'process.deliver', 'Entregas','0','0',0);
+
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'inventory', 'Inventario','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'inventory.in', 'Entradas','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'inventory.out', 'Salidas','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'inventory.view', 'Estado insumos','0','0',0);
 
 
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'admin', 'Administración','0','0',0);
@@ -137,6 +143,7 @@ INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_AP
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_AUT', 'Autorizar Solicitudes','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_ATN', 'Atender Solicitudes','0','0',0);
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_PROC', 'Procesos','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'ROLE_INV', 'Inventario','0','0',0);
 
 /*Metadata*/
 INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'createdBy', 'Creado por','0','0',0);
@@ -410,4 +417,32 @@ INSERT INTO mensajes (messageKey, catKey, catRoot, en, isCat, orden, catPasive, 
 INSERT INTO mensajes (messageKey, catKey, catRoot, en, isCat, orden, catPasive, es) VALUES ('CAT_UND_MED', NULL, NULL, NULL, '1', 0, '0', 'Catalogo Unidad de Medida');
 INSERT INTO mensajes (messageKey, catKey, catRoot, en, isCat, orden, catPasive, es) VALUES ('CAT_UND_MED_1','UND','CAT_UND_MED',NULL,'0',1,'0','Unidad');
 INSERT INTO mensajes (messageKey, catKey, catRoot, en, isCat, orden, catPasive, es) VALUES ('CAT_UND_MED_2','LT','CAT_UND_MED',NULL,'0',2,'0','Litro');
+
+/*Reportes */
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'welcome', 'Bienvenido ','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'reportes', 'Reportes','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'viewmore', 'Ver más','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'totalSolicitudes', 'Total de solicitudes','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesEstado', 'Solicitudes por estado','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesNuevas', 'Nuevas','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesCompletas', 'Solicitudes completas','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesSinAprobar', 'Sin aprobar','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesSinAutorizar', 'Sin autorizar','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesSinRevisar', 'A revisión','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesSinComprar', 'A compra','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesSinEntregar', 'Para entrega','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesEliminadas', 'Eliminadas','0','0',0);
+
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesCentro', 'Solicitudes por centro','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesTipo', 'Solicitudes por tipo','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesUsuario', 'Solicitudes por usuario','0','0',0);
+
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'itemTipo', 'Insumos por tipo','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'itemCateg', 'Insumos por categoria','0','0',0);
+INSERT INTO mensajes (messageKey, es, catPasive, isCat, orden) VALUES ( 'solicitudesAtrasadas', 'Solicitudes atrasadas','0','0',0);
+
+
+
+
+
 

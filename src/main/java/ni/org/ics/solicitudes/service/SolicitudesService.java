@@ -1,6 +1,7 @@
 package ni.org.ics.solicitudes.service;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -162,6 +163,67 @@ public class SolicitudesService {
 		// Retrieve all
 		return  query.list();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Solicitud> getSolicitudesporUsuario(String usuarioactual) {
+		//Set the SQL Query initially
+		String sqlQuery = "from Solicitud sol where sol.ctrSolicitud.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0')";
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		// Create a Hibernate query (HQL)
+		Query query = session.createQuery(sqlQuery);
+		query.setParameter("usuarioactual", usuarioactual);
+		// Retrieve all
+		return  query.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getSolicitudesporCategoria(String usuarioactual,String categoria) {
+		
+		//Set the SQL Query initially
+		String sqlQuery = "SELECT ("+ categoria +") as CAT, COUNT(sol.idSolicitud) AS Total from Solicitud sol "
+				+ "where sol.pasive = '0' and sol.ctrSolicitud.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0')"
+				+ " GROUP BY ("+ categoria + ") ";
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		// Create a Hibernate query (HQL)
+		Query query = session.createQuery(sqlQuery);
+		query.setParameter("usuarioactual", usuarioactual);
+		// Retrieve all
+		return  query.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getItemsporCategoria(String usuarioactual,String categoria) {
+		
+		//Set the SQL Query initially
+		String sqlQuery = "SELECT ("+ categoria +") as CAT, COUNT(it.idItem) AS Total from Item it "
+				+ "where it.pasive = '0' and it.solicitud.ctrSolicitud.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0')"
+				+ " GROUP BY ("+ categoria + ") ";
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		// Create a Hibernate query (HQL)
+		Query query = session.createQuery(sqlQuery);
+		query.setParameter("usuarioactual", usuarioactual);
+		// Retrieve all
+		return  query.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Solicitud> getSolicitudesAtrasadas(String usuarioactual) {
+		//Set the SQL Query initially
+		String sqlQuery = "from Solicitud sol where sol.ctrSolicitud.idCentro in (Select uc.centro.idCentro from UserCenter uc where uc.user.username =:usuarioactual and uc.pasive = '0') "
+				+ "and sol.estSolicitud <> 'SOLFIN' and sol.estSolicitud <> 'SOLELM' and sol.pasive ='0' and sol.fecRequerida < :hoy";
+		// Retrieve session from Hibernate
+		Session session = sessionFactory.getCurrentSession();
+		// Create a Hibernate query (HQL)
+		Query query = session.createQuery(sqlQuery);
+		query.setParameter("usuarioactual", usuarioactual);
+		query.setParameter("hoy", new Date());
+		// Retrieve all
+		return  query.list();
+	}
+	
 	
 	/**
 	 * Guarda un Solicitud

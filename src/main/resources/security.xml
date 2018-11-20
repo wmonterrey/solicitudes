@@ -16,7 +16,7 @@
         <intercept-url pattern="/super/.*" access="ROLE_SUPER"/>
         <intercept-url pattern="/procesos/.*" access="ROLE_PROC"/>
         
-        
+        <intercept-url pattern="/inventario/.*" access="ROLE_INV"/>
         <intercept-url pattern="/sols/atender/.*" access="ROLE_ATN"/>
         <intercept-url pattern="/sols/autorizar/.*" access="ROLE_AUT"/>
         <intercept-url pattern="/sols/aprobar/.*" access="ROLE_APRB"/>
@@ -24,7 +24,7 @@
         <intercept-url pattern="/users/chgpass" access="ROLE_CAMBIO_CONTRASENA"/>
         <intercept-url pattern="/users/resetpass" access="ROLE_CAMBIO_CONTRASENA"/>
         <intercept-url pattern="/users/chgPass" access="ROLE_CAMBIO_CONTRASENA"/>
-        <intercept-url pattern="/.*" access="ROLE_ADMIN,ROLE_SUPER,ROLE_SOLS,ROLE_ATN,ROLE_AUT,ROLE_APRB,ROLE_PROC"/>
+        <intercept-url pattern="/.*" access="ROLE_ADMIN,ROLE_SUPER,ROLE_SOLS,ROLE_ATN,ROLE_AUT,ROLE_APRB,ROLE_PROC,ROLE_INV"/>
 		<form-login login-page="/login" default-target-url="/"
 			authentication-failure-url="/loginfailed" />
 		<logout logout-url="/logout" 

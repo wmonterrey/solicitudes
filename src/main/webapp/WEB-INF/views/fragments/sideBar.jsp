@@ -62,6 +62,23 @@
             	</ul>
             </li>
 	        </sec:authorize>
+	        
+	        <sec:authorize url="/inventario/">
+            <li class="nav-item nav-dropdown envios">
+            	<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-social-dropbox"></i><spring:message code="inventory" /></a>
+            	<ul class="nav-dropdown-items">
+	                <li class="nav-item">
+	                    <a class="nav-link" href="<spring:url value="/inventario/entradas/" htmlEscape="true "/>"><i class="fa fa-sign-in"></i><spring:message code="inventory.in" /></a>
+	                </li>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="<spring:url value="/inventario/salidas/" htmlEscape="true "/>"><i class="fa fa-sign-out"></i><spring:message code="inventory.out" /></a>
+	                </li>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="<spring:url value="/inventario/estado/" htmlEscape="true "/>"><i class="icon-briefcase"></i><spring:message code="inventory.view" /></a>
+	                </li>
+            	</ul>
+            </li>
+	        </sec:authorize>
             
             <sec:authorize url="/super/">
             <li class="nav-item nav-dropdown configuracion">

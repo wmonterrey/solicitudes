@@ -209,7 +209,8 @@
 		  });
 	}   
 
-    $(".verificar").click(function(){ 
+
+    $('#lista_entregas').on('click', '.verificar', function(e){
     	$('#accionUrl').val($(this).data('whatever'));
     	$('#titulo').html('<h2 class="modal-title">'+"${confirmar}"+'</h2>');
     	$('#cuerpo').html('<h3>'+"${verif}"+'?</h3>');
